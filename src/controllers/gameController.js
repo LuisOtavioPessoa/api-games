@@ -2,7 +2,7 @@ import Game from "../models/gameModel.js";
 
 // Criar game
 
-export async function createGame(req, res){
+export async function createGame(req, res, next){
   try{
     const { title, price, platform, inStock } = req.body;
 
@@ -15,13 +15,13 @@ export async function createGame(req, res){
 
     return res.status(201).json(newGame);
   } catch (error){
-    return res.status(400).json({ error: error.message });
+    next(error);
   }
 }
 
-// Listar todos + Filtro por plataform
+// Listar todos os games + Filtro por platform(opcional) + Ordenação por price(opcional)
 
-export async function getAllGames(req, res){
+export async function getAllGames(req, res, next){
   try{
 
     const { platform, sort, order } = req.query;
@@ -36,7 +36,9 @@ export async function getAllGames(req, res){
     if(sort){
 
       if(sort !== "price"){
-        return res.status(400).json({ error: "Campo de ordenação inválido. Apenas 'price' é permitido." });
+        const error = new Error( "Campo de ordenação inválido. Apenas 'price' é permitido.");
+        error.status = 400;
+        return next(error);
       }
 
       sortOptions.price = order === "desc" ? -1 : 1;
@@ -48,13 +50,13 @@ export async function getAllGames(req, res){
 
     return res.status(200).json(games);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 }
 
 // Atualizar game por ID
 
-export async function updateGameById(req, res){
+export async function updateGameById(req, res, next){
   try{
     const { id } = req.params;
 
@@ -65,47 +67,53 @@ export async function updateGameById(req, res){
     );
 
     if (!updateGame) {
-      return res.status(404).json({ error: "Game não encontrado" });
+      const error = new Error("Game não encontrado.");
+      error.status = 404;
+      return next(error);
     }
 
     return res.status(200).json(updateGame);
   } catch (error){
-    return res.status(400).json({ error: error.message });
+    next(error);
   }
 }
 
 // Deletar game por ID
 
-  export async function deleteGameById(req, res){
+  export async function deleteGameById(req, res, next){
     try{
       const { id } = req.params;
 
       const deleteGame = await Game.findByIdAndDelete(id);
 
       if (!deleteGame) {
-      return res.status(404).json({ error: "Game não encontrado" });
+      const error = new Error("Game não encontrado.");
+      error.status = 404;
+      return next(error);
     }
 
-    return res.status(200).json({ message: "Game deletado com sucesso" });
+    return res.status(200).json({ message: "Game deletado com sucesso." });
     } catch(error){
-      return res.status(400).json({ error: error.message });
+      return next(error);
     }
   };
 
   // Buscar game por Id
 
-  export async function getGameById(req, res){
+  export async function getGameById(req, res, next){
   try{
     const { id } = req.params;
 
     const game = await Game.findById(id);
 
     if(!game){
-      return res.status(404).json({ error: "Game não encontrado" });
+      const error = new Error("Game não encontrado.");
+      error.status = 404;
+      return next(error);
     }
 
     return res.status(200).json(game);
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    return next(error);
   }
 }

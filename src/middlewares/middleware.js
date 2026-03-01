@@ -4,7 +4,9 @@ export function validateObjectId(req, res, next){
   const { id } = req.params;
 
   if(!mongoose.Types.ObjectId.isValid(id)){
-    return res.status(400).json({ error: "ID Inválido" });
+    const error = new Error ("ID Inválido");
+    error.status = 400;
+    return next(error);
   }
   next();
 }
@@ -13,19 +15,27 @@ export function validateGame(req, res, next) {
   const { title, price, platform, inStock } = req.body;
 
   if(!title || typeof title !== "string"){
-    return res.status(400).json({ error: "Title inválido" });
+    const error = new Error ("Title inválido");
+    error.status = 400;
+    return next(error);
   }
 
   if(price === undefined || typeof price !== "number" || price < 0){
-    return res.status(400).json({ error: "Price inválido" });
+    const error = new Error ("Price inválido");
+    error.status = 400;
+    return next(error);
   }
 
   if(!platform){
-    return res.status(400).json({ error: "Platform é obrigatória" });
+    const error = new Error ("Platform é obrigatória");
+    error.status = 400;
+    return next(error);
   }
 
   if(inStock === undefined || typeof inStock !== "boolean"){
-    return res.status(400).json({ error: "inStock deve ser boolean" });
+    const error = new Error ("inStock deve ser boolean");
+    error.status = 400;
+    return next(error);
   }
 
   next();
@@ -45,19 +55,27 @@ export function validateUpdateGame(req, res, next){
   const { title, price, platform, inStock } = req.body;
 
   if(title !== undefined &&  typeof title !== "string"){
-    return res.status(400).json({ error: "Title inválido" });
+    const error = new Error ("Title inválido");
+    error.status = 400;
+    return next(error);
   }
 
   if(price !== undefined && (typeof price !== "number" || price < 0)){
-    return res.status(400).json({ error: "Price inválido" });
+    const error = new Error ("Price inválido");
+    error.status = 400;
+    return next(error);
   }
 
   if(platform !== undefined && typeof platform !== "string"){
-    return res.status(400).json({ error: "Platform é obrigatória" });
+    const error = new Error ("Platform é obrigatória");
+    error.status = 400;
+    return next(error);
   }
 
   if(inStock !== undefined && typeof inStock !== "boolean"){
-    return res.status(400).json({ error: "inStock deve ser boolean" });
+    const error = new Error ("inStock deve ser boolean");
+    error.status = 400;
+    return next(error);
   }
 
   next();

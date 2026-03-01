@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import routes from "./routes/gameRoutes.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 dotenv.config();
 
@@ -14,7 +15,8 @@ const connectDB = async () => {
         console.log(`Conectado ao MongoDB`);
 
     }catch(error){
-        console.log(`Deu erro ao conectar com o MongoDB`, error);
+        console.error(`Deu erro ao conectar com o MongoDB`, error);
+        process.exit(1);
     }
 };
 
@@ -23,6 +25,7 @@ connectDB();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(routes);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log("Acessar http://localhost:3000/games");

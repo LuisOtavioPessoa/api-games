@@ -24,15 +24,27 @@ export async function createGame(req, res){
 export async function getAllGames(req, res){
   try{
 
-    const { platform } = req.query;
+    const { platform, sort, order } = req.query;
 
     const filter = {};
+    const sortOptions = {};
 
     if(platform){
       filter.platform = { $regex: platform, $options: "i" };
     }
 
-    const games = await Game.find(filter);
+    if(sort){
+
+      if(sort !== "price"){
+        return res.status(400).json({ error: "Campo de ordenação inválido. Apenas 'price' é permitido." });
+      }
+
+      sortOptions.price = order === "desc" ? -1 : 1;
+    }
+
+    const games = await Game
+      .find(filter)
+      .sort(sortOptions);
 
     return res.status(200).json(games);
   } catch (error) {

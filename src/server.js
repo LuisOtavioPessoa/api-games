@@ -6,7 +6,7 @@ import routes from "./routes/gameRoutes.js";
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const connectDB = async () => {
     try{

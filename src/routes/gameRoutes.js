@@ -10,6 +10,5 @@ route.post("/games", validateGame , createGame );
 route.put("/games/:id", validateObjectId, validateUpdateGame ,updateGameById);
 route.delete("/games/:id", validateObjectId , deleteGameById );
 
-
 export default route;
 

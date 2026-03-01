@@ -19,11 +19,21 @@ export async function createGame(req, res){
   }
 }
 
-// Listar todos
+// Listar todos + Filtro por plataform
 
 export async function getAllGames(req, res){
   try{
-    const games = await Game.find();
+
+    const { platform } = req.query;
+
+    const filter = {};
+
+    if(platform){
+      filter.platform = { $regex: platform, $options: "i" };
+    }
+
+    const games = await Game.find(filter);
+
     return res.status(200).json(games);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -69,3 +79,21 @@ export async function updateGameById(req, res){
       return res.status(400).json({ error: error.message });
     }
   };
+
+  // Buscar game por Id
+
+  export async function getGameById(req, res){
+  try{
+    const { id } = req.params;
+
+    const game = await Game.findById(id);
+
+    if(!game){
+      return res.status(404).json({ error: "Game não encontrado" });
+    }
+
+    return res.status(200).json(game);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+}

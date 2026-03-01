@@ -1,3 +1,14 @@
+import mongoose from "mongoose";
+
+export function validateObjectId(req, res, next){
+  const { id } = req.params;
+
+  if(!mongoose.Types.ObjectId.isValid(id)){
+    return res.status(400).json({ error: "ID Inválido" });
+  }
+  next();
+}
+
 export function validateGame(req, res, next) {
   const { title, price, platform, inStock } = req.body;
 
@@ -22,6 +33,11 @@ export function validateGame(req, res, next) {
 
 export function logGetGames(req, res, next) {
   console.log("Buscando todos os games...");
+  next();
+}
+
+export function logGetGameById(req, res, next) {
+  console.log(`Buscando game com ID: ${req.params.id}`);
   next();
 }
 

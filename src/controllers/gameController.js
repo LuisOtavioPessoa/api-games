@@ -24,7 +24,7 @@ export async function createGame(req, res, next){
 export async function getAllGames(req, res, next){
   try{
 
-    const { platform, sort, order } = req.query;
+    const { platform, sort, order, page = 1, limit = 10} = req.query;
 
     const filter = {};
     const sortOptions = {};
@@ -41,14 +41,36 @@ export async function getAllGames(req, res, next){
         return next(error);
       }
 
+      if(order && order !== "asc" && order !== "desc"){
+        const error = new Error("Order inválido. Use apenas 'asc' ou 'desc'.");
+        error.status = 400;
+        return next(error);
+      }
+
       sortOptions.price = order === "desc" ? -1 : 1;
     }
 
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+
+    const skip = (pageNumber - 1) * limitNumber;
+
     const games = await Game
       .find(filter)
-      .sort(sortOptions);
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limitNumber);
 
-    return res.status(200).json(games);
+    const total = await Game.countDocuments(filter);
+
+    return res.status(200).json({
+      total,
+      page: pageNumber,
+      totalPages: Math.ceil(total / limitNumber),
+      limit: limitNumber,
+      data: games
+    });
+    
   } catch (error) {
     next(error);
   }

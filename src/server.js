@@ -3,11 +3,17 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import routes from "./routes/gameRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import swaggerUi from "swagger-ui-express";
+import fs from "fs";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const swaggerDocument = JSON.parse(
+  fs.readFileSync("./src/docs/swagger.json", "utf-8")
+);
 
 const connectDB = async () => {
     try{
@@ -24,10 +30,12 @@ connectDB();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use("/docs/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(routes);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-    console.log("Acessar http://localhost:3000/games");
     console.log(`O servidor está rodando na porta ${PORT}`);
+    console.log("Acessar http://localhost:3000/games");
+    console.log("Swagger: http://localhost:3000/docs/swagger");
 });

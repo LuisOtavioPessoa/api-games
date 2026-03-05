@@ -1,0 +1,192 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Games API",
+    "version": "1.0.0",
+    "description": "API para gerenciamento de jogos"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Game": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "title": { "type": "string" },
+          "price": { "type": "number" },
+          "platform": { "type": "string" },
+          "inStock": { "type": "boolean" }
+        }
+      },
+      "GameInput": {
+        "type": "object",
+        "required": ["title", "price", "platform", "inStock"],
+        "properties": {
+          "title": { "type": "string" },
+          "price": { "type": "number" },
+          "platform": { "type": "string" },
+          "inStock": { "type": "boolean" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/games": {
+      "get": {
+        "summary": "Lista todos os jogos",
+        "tags": ["Games"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "platform",
+            "schema": { "type": "string" },
+            "description": "Filtra jogos por plataforma"
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "schema": {
+              "type": "string",
+              "enum": ["price"]
+            },
+            "description": "Campo para ordenação"
+          },
+          {
+            "in": "query",
+            "name": "order",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"]
+            },
+            "description": "Ordem da ordenação"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": { "type": "integer" },
+            "description": "Número da página"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": { "type": "integer" },
+            "description": "Quantidade por página"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de jogos retornada com sucesso"
+          },
+          "400": {
+            "description": "Parâmetros inválidos"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um novo jogo",
+        "tags": ["Games"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GameInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Game criado com sucesso"
+          },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/games/{id}": {
+      "get": {
+        "summary": "Busca um jogo pelo ID",
+        "tags": ["Games"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID do jogo"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Jogo encontrado" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Game não encontrado" },
+          "500": { "description": "Erro interno do servidor" }
+        }
+      },
+      "put": {
+        "summary": "Atualiza um jogo pelo ID",
+        "tags": ["Games"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GameInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Game atualizado com sucesso" },
+          "400": { "description": "Dados inválidos ou ID inválido" },
+          "404": { "description": "Game não encontrado" },
+          "500": { "description": "Erro interno do servidor" }
+        }
+      },
+      "delete": {
+        "summary": "Deleta um jogo pelo ID",
+        "tags": ["Games"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Game deletado com sucesso" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Game não encontrado" },
+          "500": { "description": "Erro interno do servidor" }
+        }
+      }
+    }
+  }
+}

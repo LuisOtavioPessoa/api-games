@@ -30,12 +30,24 @@ connectDB();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.get("/", (req, res) => {
+    res.json({
+        message: "Games API funcionando",
+        endpoints: {
+            games: "/games",
+            docs: "/docs/swagger",
+        }
+    });
+});
 app.use("/docs/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(routes);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`O servidor está rodando na porta ${PORT}`);
-    console.log("Acessar http://localhost:3000/games");
-    console.log("Swagger: http://localhost:3000/docs/swagger");
+    
+    if (process.env.NODE_ENV !== "production") {
+    console.log(`Games: http://localhost:${PORT}/games`);
+    console.log(`Swagger: http://localhost:${PORT}/docs/swagger`);
+  }
 });
